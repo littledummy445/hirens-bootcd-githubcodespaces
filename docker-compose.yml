@@ -1,0 +1,16 @@
+services:
+  windows:
+    image: dockurr/windows:latest
+    container_name: hirens-vm
+    environment:
+      VERSION: "https://www.hirensbootcd.org/files/HBCD_PE_x64.iso"
+    devices:
+      - /dev/kvm
+      - /dev/net/tun
+    cap_add:
+      - NET_ADMIN
+    ports:
+      - 8006:8006
+    volumes:
+      - ./storage:/storage
+    restart: always
