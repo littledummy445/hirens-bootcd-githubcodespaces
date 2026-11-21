@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hiren's BootCD PE in GitHub Codespaces</title>
+  <meta
+    name="description"
+    content="Run Hiren's BootCD PE in GitHub Codespaces using QEMU, Docker, and noVNC."
+  />
+  <style>
+    :root {
+      --bg: #0b0f17;
+      --surface: #121826;
+      --surface-2: #182032;
+      --text: #e6edf7;
+      --muted: #9fb0c8;
+      --accent: #38bdf8;
+      --accent-2: #22c55e;
+      --border: #263248;
+      --code-bg: #080c12;
+      --max-w: 960px;
+      --radius: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+        Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .container {
+      width: 100%;
+      max-width: var(--max-w);
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    /* Header / Nav */
+    header {
+      border-bottom: 1px solid var(--border);
+      background: rgba(11, 15, 23, 0.85);
+      backdrop-filter: blur(8px);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 0;
+      flex-wrap: wrap;
+    }
+
+    .brand {
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      font-size: 0.92rem;
+    }
+
+    .nav-links a {
+      color: var(--muted);
+    }
+
+    .nav-links a:hover {
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    /* Hero */
+    .hero {
+      padding: 64px 0 44px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      color: var(--accent);
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    h1 {
+      margin: 0 0 14px;
+      font-size: clamp(1.9rem, 4vw, 2.8rem);
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+    }
+
+    .hero p {
+      margin: 0 0 24px;
+      max-width: 720px;
+      color: var(--muted);
+      font-size: 1.05rem;
+    }
+
+    .actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      border: 1px solid transparent;
+      transition: transform 0.12s ease, opacity 0.12s ease;
+    }
+
+    .btn:hover {
+      text-decoration: none;
+      transform: translateY(-1px);
+    }
+
+    .btn-primary {
+      background: var(--accent);
+      color: #061018;
+    }
+
+    .btn-secondary {
+      background: var(--surface-2);
+      color: var(--text);
+      border-color: var(--border);
+    }
+
+    /* Sections */
+    section {
+      padding: 48px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    section:last-of-type {
+      border-bottom: none;
+    }
+
+    h2 {
+      margin: 0 0 12px;
+      font-size: 1.5rem;
+      letter-spacing: -0.01em;
+    }
+
+    .section-lead {
+      margin: 0 0 24px;
+      color: var(--muted);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+    }
+
+    .card h3 {
+      margin: 0 0 8px;
+      font-size: 1.05rem;
+    }
+
+    .card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 0.94rem;
+    }
+
+    /* Steps & Code */
+    ol.steps {
+      margin: 0;
+      padding-left: 20px;
+      display: grid;
+      gap: 18px;
+    }
+
+    ol.steps li > strong {
+      display: block;
+      margin-bottom: 6px;
+      font-size: 1.02rem;
+    }
+
+    pre {
+      margin: 8px 0 0;
+      padding: 14px 16px;
+      background: var(--code-bg);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow-x: auto;
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+        "Liberation Mono", "Courier New", monospace;
+      font-size: 0.9em;
+    }
+
+    :not(pre) > code {
+      background: rgba(148, 163, 184, 0.14);
+      padding: 2px 6px;
+      border-radius: 5px;
+    }
+
+    .note {
+      margin-top: 20px;
+      padding: 14px 16px;
+      border-left: 3px solid var(--accent-2);
+      background: rgba(34, 197, 94, 0.08);
+      border-radius: 0 8px 8px 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    footer {
+      padding: 28px 0 44px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 0.9rem;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="container nav">
+      <a class="brand" href="#">hirens-bootcd-githubcodespaces</a>
+      <nav class="nav-links" aria-label="Primary navigation">
+        <a href="#how-it-works">How It Works</a>
+        <a href="#quickstart">Quick Start</a>
+        <a href="#notes">Codespaces Notes</a>
+        <a href="https://github.com/YOUR-USERNAME/hirens-bootcd-githubcodespaces" target="_blank" rel="noopener noreferrer">GitHub</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container">
+        <span class="badge">QEMU · Docker · noVNC</span>
+        <h1>Hiren's BootCD PE in GitHub Codespaces</h1>
+        <p>
+          Spin up a browser-accessible virtual machine running Hiren's BootCD PE
+          inside a GitHub Codespace using Docker, QEMU, and noVNC—no local VM
+          software required.
+        </p>
+        <div class="actions">
+          <a class="btn btn-primary" href="#quickstart">Get Started</a>
+          <a
+            class="btn btn-secondary"
+            href="https://github.com/YOUR-USERNAME/hirens-bootcd-githubcodespaces"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            View Repository
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <section id="how-it-works">
+      <div class="container">
+        <h2>How It Works</h2>
+        <p class="section-lead">
+          Three pieces work together inside the Codespace container to boot the ISO and stream the display to your browser.
+        </p>
+        <div class="grid">
+          <article class="card">
+            <h3>Docker Container</h3>
+            <p>
+              Packages the runtime environment and exposes the web/VNC port so
+              GitHub Codespaces can forward the display directly to your browser.
+            </p>
+          </article>
+          <article class="card">
+            <h3>QEMU Virtual Machine</h3>
+            <p>
+              Boots the Hiren's BootCD PE ISO image inside a virtualized x86_64
+              machine with virtual storage and network adapters.
+            </p>
+          </article>
+          <article class="card">
+            <h3>noVNC Browser Client</h3>
+            <p>
+              Translates the VM's VNC display into an HTML5 canvas so you can
+              interact with the boot screen and PE desktop right in a browser tab.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section id="quickstart">
+      <div class="container">
+        <h2>Quick Start</h2>
+        <p class="section-lead">
+          Update <code>YOUR-USERNAME</code> in the repository links and match the commands below to your Compose or container setup.
+        </p>
+        <ol class="steps">
+          <li>
+            <strong>Open a GitHub Codespace</strong>
+            Create a new Codespace from the <code>hirens-bootcd-githubcodespaces</code> repository and wait for the terminal prompt to load.
+          </li>
+          <li>
+            <strong>Start the container stack</strong>
+            <pre><code>docker compose up -d</code></pre>
+          </li>
+          <li>
+            <strong>Open the forwarded noVNC port</strong>
+            Open the <strong>Ports</strong> tab in your Codespace and launch the forwarded web/noVNC URL (for example, port <code>8006</code> or <code>6080</code>) to view the VM boot into Hiren's BootCD PE.
+          </li>
+        </ol>
+
+        <div class="note" id="notes">
+          <strong>Codespaces Notes:</strong> Hardware virtualization (<code>/dev/kvm</code>) and nested virtual networking availability can vary by Codespace instance, so software emulation or startup times may be slower than on a local bare-metal Linux host.
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="container" style="display:flex; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+      <span>hirens-bootcd-githubcodespaces</span>
+      <span>Built with HTML &amp; CSS for GitHub Pages</span>
+    </div>
+  </footer>
+</body>
+</html>
